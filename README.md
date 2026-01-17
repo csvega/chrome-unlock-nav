@@ -2,6 +2,9 @@
 
 오른쪽 클릭/복사 제한을 해제하고, 자주 가는 사이트를 버튼으로 등록해 빠르게 이동할 수 있는 크롬 확장입니다.
 
+# 크롬에 추가하기
+https://chromewebstore.google.com/detail/anadaljmkeocmmhccckeiellphojiaae?utm_source=item-share-cb
+
 ## 주요 기능
 - 우클릭/복사/드래그 등 제한 해제 토글
 - 바로가기 버튼 등록 및 열기(새 탭)
