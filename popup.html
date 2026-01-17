@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="container">
+    <h2>Unlock & Nav</h2>
+
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="toggle-unblock">
+        <span class="slider round"></span>
+      </label>
+      <span id="toggle-label">Unblocker ON</span>
+    </div>
+
+    <div id="buttons-container">
+    </div>
+
+    <div class="controls">
+      <button id="edit-mode-btn">Edit Shortcuts</button>
+    </div>
+
+    <div id="edit-panel" class="hidden">
+      <div class="edit-header">
+        <h3>Configure Shortcuts</h3>
+      </div>
+      <div id="edit-list-container">
+        <div id="edit-list"></div>
+      </div>
+
+      <button id="add-btn" class="add-row-btn">+ Add New Shortcut</button>
+
+      <div class="edit-actions">
+        <button id="cancel-btn">Cancel</button>
+        <button id="save-btn">Save</button>
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>
