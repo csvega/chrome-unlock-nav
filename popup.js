@@ -114,11 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function addEditRow(name = '', url = '') {
         const row = document.createElement('div');
         row.className = 'edit-row';
-        row.draggable = true;
 
         const dragHandle = document.createElement('span');
         dragHandle.className = 'drag-handle';
         dragHandle.textContent = '☰';
+        dragHandle.draggable = true;
 
         const nameInput = document.createElement('input');
         nameInput.placeholder = 'Name';
@@ -138,8 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
             updateAddButtonState();
         };
 
-        row.addEventListener('dragstart', handleDragStart);
-        row.addEventListener('dragend', handleDragEnd);
+        dragHandle.addEventListener('dragstart', (e) => handleDragStart.call(row, e));
+        dragHandle.addEventListener('dragend', (e) => handleDragEnd.call(row, e));
         row.addEventListener('dragover', handleDragOver);
         row.addEventListener('dragenter', handleDragEnter);
         row.addEventListener('dragleave', handleDragLeave);
