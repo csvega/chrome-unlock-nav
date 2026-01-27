@@ -71,10 +71,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const img = document.createElement('img');
-                img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
                 img.alt = "";
                 img.className = 'favicon';
                 img.draggable = false;
+
+                const urlStr = item.url.startsWith('http') ? item.url : `https://${item.url}`;
+
+                img.src = `chrome://favicon/size/64@1x/${urlStr}`;
+
+                img.onerror = () => {
+                    img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                    img.onerror = () => {
+                        img.style.display = 'none';
+                    };
+                };
 
                 const span = document.createElement('span');
                 span.textContent = item.name;
