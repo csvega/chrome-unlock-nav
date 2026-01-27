@@ -3,7 +3,7 @@
   "name": "Unlock & Nav",
   "short_name": "Unlock Nav",
   "homepage_url": "https://codeup.kr",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Unblocks right-click/copy and provides configurable navigation buttons.",
   "permissions": [
     "storage"
