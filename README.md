@@ -12,12 +12,6 @@ https://chromewebstore.google.com/detail/anadaljmkeocmmhccckeiellphojiaae?utm_so
 - 파비콘 자동 표시(Google s2)
 - 최대 30개까지 바로가기 관리
 
-## 설치 방법(개발자 모드)
-1. 크롬 주소창에 `chrome://extensions` 입력
-2. 우측 상단 `개발자 모드` 활성화
-3. `압축해제된 확장 프로그램을 로드합니다` 클릭
-4. 이 프로젝트 폴더(`chrome-unlock-nav`) 선택
-
 ## 사용 방법
 1. 확장 아이콘 클릭 후 `Unblocker ON/OFF` 토글
 2. `Edit Shortcuts` 클릭
