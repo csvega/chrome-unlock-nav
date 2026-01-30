@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const urlStr = item.url.startsWith('http') ? item.url : `https://${item.url}`;
 
-                img.src = `chrome://favicon/size/64@1x/${urlStr}`;
+                img.src = `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(urlStr)}&size=64`;
 
                 img.onerror = () => {
                     img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
