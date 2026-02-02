@@ -8,8 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBtn = document.getElementById('add-btn');
     const toggleUnblock = document.getElementById('toggle-unblock');
     const toggleLabel = document.getElementById('toggle-label');
+    const addCurrentSiteBtn = document.getElementById('add-current-site-btn');
+    const contextMenu = document.getElementById('context-menu');
+    const contextDeleteBtn = document.getElementById('context-delete-btn');
 
     const MAX_BUTTONS = 30;
+    let contextTargetIndex = null;
+    let currentTabUrl = '';
+    let currentTabTitle = '';
     let currentShortcuts = [];
     let isDraggingShortcut = false;
     let draggedShortcutIndex = null;
@@ -107,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.addEventListener('dragstart', handleShortcutDragStart);
                 btn.addEventListener('dragend', handleShortcutDragEnd);
                 btn.addEventListener('drop', handleShortcutDrop);
+                btn.addEventListener('contextmenu', handleContextMenu);
                 container.appendChild(btn);
             });
         }
@@ -413,5 +420,141 @@ document.addEventListener('DOMContentLoaded', () => {
 
     cancelBtn.onclick = () => {
         editPanel.classList.add('hidden');
+    };
+
+    // Get current tab info and update star button state
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+            currentTabUrl = tabs[0].url;
+            currentTabTitle = tabs[0].title || '';
+            updateStarButtonState();
+        }
+    });
+
+    function updateStarButtonState() {
+        chrome.storage.sync.get(['shortcuts'], (result) => {
+            const shortcuts = result.shortcuts || [];
+            const isAdded = isCurrentSiteInShortcuts(shortcuts, currentTabUrl);
+            const starIcon = addCurrentSiteBtn.querySelector('.star-icon');
+            if (isAdded) {
+                starIcon.textContent = '★';
+                addCurrentSiteBtn.classList.add('added');
+                addCurrentSiteBtn.title = 'Already added';
+            } else {
+                starIcon.textContent = '☆';
+                addCurrentSiteBtn.classList.remove('added');
+                addCurrentSiteBtn.title = 'Add current site';
+            }
+        });
+    }
+
+    function isCurrentSiteInShortcuts(shortcuts, url) {
+        if (!url) return false;
+        try {
+            const currentDomain = new URL(url).hostname;
+            return shortcuts.some(s => {
+                try {
+                    const shortcutUrl = s.url.startsWith('http') ? s.url : `https://${s.url}`;
+                    const shortcutDomain = new URL(shortcutUrl).hostname;
+                    return shortcutDomain === currentDomain;
+                } catch (e) {
+                    return false;
+                }
+            });
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function getShortNameFromTitle(title) {
+        if (!title) return '';
+        // Remove common suffixes and get short name
+        let name = title.split(' - ')[0].split(' | ')[0].split(' :: ')[0];
+        // Limit length
+        if (name.length > 15) {
+            name = name.substring(0, 15);
+        }
+        return name.trim();
+    }
+
+    // Context menu functions
+    function handleContextMenu(e) {
+        e.preventDefault();
+        contextTargetIndex = Number(this.dataset.index);
+
+        const menuWidth = 120;
+        const menuHeight = 40;
+        let x = e.clientX;
+        let y = e.clientY;
+
+        // Adjust position if menu goes outside viewport
+        if (x + menuWidth > window.innerWidth) {
+            x = window.innerWidth - menuWidth - 5;
+        }
+        if (y + menuHeight > window.innerHeight) {
+            y = window.innerHeight - menuHeight - 5;
+        }
+
+        contextMenu.style.left = `${x}px`;
+        contextMenu.style.top = `${y}px`;
+        contextMenu.classList.remove('hidden');
+    }
+
+    function hideContextMenu() {
+        contextMenu.classList.add('hidden');
+        contextTargetIndex = null;
+    }
+
+    // Hide context menu on click outside
+    document.addEventListener('click', hideContextMenu);
+    document.addEventListener('contextmenu', (e) => {
+        if (!e.target.closest('.shortcut-btn')) {
+            hideContextMenu();
+        }
+    });
+
+    // Delete shortcut from context menu
+    contextDeleteBtn.onclick = () => {
+        if (contextTargetIndex === null) return;
+
+        const updated = currentShortcuts.slice();
+        updated.splice(contextTargetIndex, 1);
+
+        chrome.storage.sync.set({ shortcuts: updated }, () => {
+            renderButtons(updated);
+            updateStarButtonState();
+            hideContextMenu();
+        });
+    };
+
+    addCurrentSiteBtn.onclick = () => {
+        if (!currentTabUrl || !currentTabUrl.startsWith('http')) {
+            return;
+        }
+
+        chrome.storage.sync.get(['shortcuts'], (result) => {
+            const shortcuts = result.shortcuts || [];
+
+            if (isCurrentSiteInShortcuts(shortcuts, currentTabUrl)) {
+                // Already added - could show message or do nothing
+                return;
+            }
+
+            if (shortcuts.length >= MAX_BUTTONS) {
+                alert('Maximum shortcuts limit reached (30)');
+                return;
+            }
+
+            const newShortcut = {
+                name: getShortNameFromTitle(currentTabTitle),
+                url: currentTabUrl
+            };
+
+            shortcuts.push(newShortcut);
+            chrome.storage.sync.set({ shortcuts: shortcuts }, () => {
+                renderButtons(shortcuts);
+                updateStarButtonState();
+            });
+        });
     };
 });
