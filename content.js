@@ -20,19 +20,14 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
 });
 
-const unblockEvents = ['selectstart', 'copy', 'cut', 'paste', 'dragstart', 'contextmenu'];
+const unblockEvents = ['selectstart', 'copy', 'cut', 'paste', 'dragstart', 'contextmenu', 'mousedown'];
 
 unblockEvents.forEach(type => {
-    document.addEventListener(type, (e) => {
+    window.addEventListener(type, (e) => {
         if (!isEnabled) return;
-        e.stopPropagation();
+        e.stopImmediatePropagation();
     }, true);
 });
-
-document.addEventListener('contextmenu', (e) => {
-    if (!isEnabled) return;
-    e.stopImmediatePropagation();
-}, true);
 
 const clearDocumentHandlers = () => {
     if (!isEnabled) return;
