@@ -20,7 +20,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
 });
 
-const unblockEvents = ['selectstart', 'copy', 'cut', 'paste', 'dragstart'];
+const unblockEvents = ['selectstart', 'copy', 'cut', 'paste', 'dragstart', 'contextmenu'];
 
 unblockEvents.forEach(type => {
     document.addEventListener(type, (e) => {
@@ -31,11 +31,7 @@ unblockEvents.forEach(type => {
 
 document.addEventListener('contextmenu', (e) => {
     if (!isEnabled) return;
-
-    if (e.altKey) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-    }
+    e.stopImmediatePropagation();
 }, true);
 
 const clearDocumentHandlers = () => {
@@ -46,6 +42,7 @@ const clearDocumentHandlers = () => {
     document.oncut = null;
     document.onpaste = null;
     document.ondragstart = null;
+    document.oncontextmenu = null;
 };
 
 const removeInlineHandlers = () => {
@@ -56,7 +53,8 @@ const removeInlineHandlers = () => {
         '[oncopy]',
         '[oncut]',
         '[onpaste]',
-        '[ondragstart]'
+        '[ondragstart]',
+        '[oncontextmenu]'
     ].join(', ');
 
     document.querySelectorAll(selectors).forEach(el => {
@@ -65,18 +63,21 @@ const removeInlineHandlers = () => {
         el.oncut = null;
         el.onpaste = null;
         el.ondragstart = null;
+        el.oncontextmenu = null;
 
         el.removeAttribute('onselectstart');
         el.removeAttribute('oncopy');
         el.removeAttribute('oncut');
         el.removeAttribute('onpaste');
         el.removeAttribute('ondragstart');
+        el.removeAttribute('oncontextmenu');
     });
 
     if (document.body) {
         document.body.onselectstart = null;
         document.body.oncopy = null;
         document.body.ondragstart = null;
+        document.body.oncontextmenu = null;
     }
 };
 
